@@ -6,7 +6,7 @@
     "@clerk/themes": "^2.1.19",
     "@clerk/types": "^4.13.0",
     "@headlessui/tailwindcss": "^0.1.2",
-    "@nivo/bar": "^0.85.1",
+    "@nivo/bar": "",
     "@prisma/client": "^5.12.1",
     "@sentry/nextjs": "^8.15.0",
     "@slack/web-api": "^7.3.1",
