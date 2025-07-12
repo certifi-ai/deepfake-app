@@ -94,6 +94,9 @@ export class Role {
 }
 
 export function getRoleByUser(user: UserResource | null | undefined): Role {
+	console.log("In getRoleByUser:", user?.externalId, user?.primaryEmailAddress?.emailAddress)
+	// const foo=getRoleByIdEmail(user?.externalId, user?.primaryEmailAddress?.emailAddress)
+	// console.log("foo = ", foo);
   return getRoleByIdEmail(user?.externalId, user?.primaryEmailAddress?.emailAddress)
 }
 

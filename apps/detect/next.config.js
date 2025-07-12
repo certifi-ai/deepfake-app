@@ -23,6 +23,7 @@ module.exports = {
     })
     return config
   },
+  allowedDevOrigins: ['local-origin.dev', '*.local-origin.dev'],
 }
 
 // Injected content via Sentry wizard below

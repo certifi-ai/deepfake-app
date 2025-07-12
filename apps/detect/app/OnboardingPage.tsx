@@ -22,8 +22,11 @@ export default function OnboardingPage() {
   async function onSubmit(data: FormData) {
     const org = ((data.get("org") as string) ?? "").trim()
     const agreedTerms = ((data.get("accept") as string) ?? "").trim() == "on"
+    console.log("In OnSubmit:  agreedTerms = ", agreedTerms)
     const emailConsent = ((data.get("emailConsent") as string) ?? "").trim() == "on"
+    console.log("calling onboardnewuser")
     const rsp = await onboardNewUser({ org, agreedTerms, emailConsent })
+    console.log("Completed onboardnewuser")
     switch (rsp.type) {
       case "error":
         setMessage(rsp.message)
