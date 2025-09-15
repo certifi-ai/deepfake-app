@@ -33,14 +33,17 @@ export async function onboardNewUser({ org, agreedTerms, emailConsent }: UserPub
     }
   try {
     const email = user.primaryEmailAddress?.emailAddress
+    console.log("user email is ", email)
 
     if (!email) {
       throw new Error("user is missing primary email address")
     }
 
     let externalId = user.externalId || undefined
+    console.log("Initial set of externalID to ", user.externalId)
     if (!user.externalId) {
       try {
+        console.log("Trying to create DB user ")
         // The user may not exist if they have not accepted the terms
         const userRecord = await db.user.create({
           data: {
@@ -48,11 +51,13 @@ export async function onboardNewUser({ org, agreedTerms, emailConsent }: UserPub
             email,
           },
         })
+        console.log("Setting external ID to ", userRecord.id)
         externalId = userRecord.id
       } catch (e: any) {
         if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
           console.warn("Caught unique constraint violation: ", e)
         } else {
+          console.warn("violation: ", e)
           throw e
         }
       }
@@ -69,6 +74,7 @@ export async function onboardNewUser({ org, agreedTerms, emailConsent }: UserPub
       })
     }
 
+    console.log("*************>> Calling updateUser with ", user.id,  externalId, agreedTerms, emailConsent, org);
     const updatedClerkUser = await clerkClient().users.updateUser(user.id, {
       externalId,
       publicMetadata: { agreedTerms, emailConsent, org },

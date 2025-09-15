@@ -10,13 +10,17 @@ export { db } from "./db"
 
 /** Returns the `Role` of the currently authed session on the server. */
 export const getServerRole = async () => {
+  console.log("In getServerRole:", clerkAuth().sessionClaims?.externalId, clerkAuth().sessionClaims?.email);
+
   return getRoleByIdEmail(clerkAuth().sessionClaims?.externalId, clerkAuth().sessionClaims?.email)
 }
 
 /** Returns the `Role` of the given user ID. */
 export async function getRoleByUserId(userId: string): Promise<Role> {
+  console.log("In getRoleByUserId:", userId);
   const user = await db.user.findUnique({ where: { id: userId } })
   const email = user?.email
+  console.log("Calling getRoleByIdEmail:", userId, email);
   return getRoleByIdEmail(userId, email)
 }
 

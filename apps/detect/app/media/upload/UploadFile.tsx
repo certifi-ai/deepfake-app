@@ -136,7 +136,9 @@ function useUploadFileState() {
       const orgId = org.organization?.id
       const { id: mediaId, postUrl } = await uploadFileForAnalysis(targetFile, orgId, onPercentDoneChange)
       // redirect to analysis page for this id
+      console.error('File uploaded.  Redirecting to ', mediaId, postUrl)
       router.replace(analyzeUrl(mediaId, postUrl))
+      console.error('Route replaced')
     } catch (e: any) {
       console.error(`Failed to upload file: ${e}`)
       setState({
@@ -167,10 +169,13 @@ export async function uploadFileForAnalysis(
   }
 
   // ask mediares to create a new mediaId and presigned url for this file
+    console.warn(`Throttling request for media upload.`)
   const uploadData = await createFileUpload(file.name)
+    console.warn(`Throttling request for media upload.`)
   if (uploadData.result !== "upload") {
     throw new Error(`Failed to create file upload data for ${file.name}`)
   }
+    console.warn(`Throttling request for media upload.`)
 
   // upload the file to s3
   console.log(`Uploading to s3 [id=${uploadData.id}, filename=${file.name}, signedUrl=${uploadData.putUrl}]`)
@@ -186,22 +191,30 @@ export async function uploadFileForAnalysis(
       }
     },
   })
+  console.log(`Uploading result [status=${uploadResult.status}]`)
   if (uploadResult.status !== 200) {
+    console.log(`Cratering...`)
     throw new Error(`Failed to upload file: ${uploadResult.statusText}`)
   }
+  console.log(`Moving on...`)
 
   // create db records for the uploaded file
+  console.log(`Saving file upload response [id=${uploadData.id}, filename=${file.name}]`)
   const saveFileUploadResponse = await saveUploadedFile({
     id: uploadData.id,
     mimeType: file.type,
     filename: file.name,
     orgId,
   })
+  console.log("Save file upload response type = ", saveFileUploadResponse.type)
   if (saveFileUploadResponse.type === "error") {
+  console.log("SaveFileUpload checkpoint 1")
     throw new Error(saveFileUploadResponse.message)
   }
   // the mediaUrl does double duty as the postUrl for these uploaded files
+  console.log("SaveFileUpload checkpoint 2")
   const postUrl = saveFileUploadResponse.mediaUrl
+  console.log("SaveFileUpload checkpoint 3 ", uploadData.id, postUrl)
 
   return { id: uploadData.id, postUrl }
 }

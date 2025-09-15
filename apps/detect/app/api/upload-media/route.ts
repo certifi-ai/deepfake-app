@@ -34,9 +34,15 @@ export async function POST(req: NextRequest) {
   if (!file) return fail(400, "'file' missing from form data.")
   if (file.size >= 100000000) return fail(413, "File must be under 100MB.", `Size was ${file.size / 1_000_000} MB.`)
 
-  const uploadData = await getMediaResClient().createFileUpload(file.name)
-  if (uploadData.result !== "upload") return fail(500, "/create_file_upload failed", uploadData)
+  console.warn("Creating file upload for:", file.name)
 
+  const uploadData = await getMediaResClient().createFileUpload(file.name)
+  if (uploadData.result !== "upload") {
+          console.warn("Creating file upload FAILED for:", file.name)
+	  return fail(500, "/create_file_upload failed", uploadData)
+  }
+
+  console.warn("Creating file upload FAILED for:", file.name)
   try {
     const s3Upload = await nodeFetch(uploadData.putUrl, { method: "PUT", body: Buffer.from(await file.arrayBuffer()) })
     if (!s3Upload.ok) return fail(500, `Error PUTing to S3`, { status: s3Upload.status, text: s3Upload.text })

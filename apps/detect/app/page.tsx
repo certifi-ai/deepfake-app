@@ -8,6 +8,7 @@ import OnboardingPage from "./OnboardingPage"
 import { signInUrl } from "./site"
 import { HomepageUserHistory } from "./media/history/HomepageUserHistory"
 import CreateOrgCTA from "./components/create-org/CreateOrgCTA"
+import { currentUser } from '@clerk/nextjs/server';
 
 export const dynamic = "force-dynamic"
 
@@ -24,7 +25,10 @@ export default async function Page() {
     return redirect(signInUrl)
   }
 
-  if (isLoggedIn && !session.sessionClaims?.agreedTerms) {
+  const user = await currentUser();
+  const publicMetadata = user.publicMetadata
+
+  if (isLoggedIn && !publicMetadata.agreedTerms) {
     console.log("user has not agreed to terms")
     return <OnboardingPage />
   }
